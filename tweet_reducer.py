@@ -11,8 +11,9 @@ import string
 from datetime import datetime
 from datetime import timedelta
 
-
-data = '../data/Springbreak_0311All.json'
+filename = 'Springbreak_All_0303_0405'
+data = '../data/%s.json'%filename
+outfile = "../pro_data/%s_sim.json"%filename
 
 def get_tweet_lang(tweet):
 	if tweet.has_key('lang'):
@@ -70,6 +71,7 @@ def get_localtime(utc_time, offset):
 def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 	sim_tweets = []
 	sim_tweet = {}
+	sim_user = {}
 	with open(data, 'r') as f:
 		for line in f:
 			tweet = check_valid(line)
@@ -78,7 +80,8 @@ def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 				for tweet_key in tweet_keys:
 					sim_tweet[tweet_key] = tweet[tweet_key]
 				for user_key in user_keys:
-					sim_tweet['user_%s'%user_key] = user[user_key]
+					sim_user[user_key] = user[user_key]
+				sim_tweet['user'] = sim_user
 				if entity_wanted:
 					entities = extract_tweet_entities(tweet)
 					sim_tweet['entities'] = entities
@@ -95,5 +98,8 @@ if __name__ == '__main__':
 	# define customized list of keys for the reduced tweets
 	tweet_keys_wanted = ['created_at', 'id', 'text', 'in_reply_to_status_id', 'in_reply_to_user_id', 'coordinates', 'retweet_count', 'favorite_count', 'retweeted', 'place']
 	user_keys_wanted = ['id', 'location', 'followers_count', 'friends_count', 'statuses_count', 'utc_offset', 'time_zone']
-	sim_tweets = sim_tweet(data, tweet_keys_wanted, user_keys_wanted)[:5]
-	print sim_tweets
+	sim_tweets = sim_tweet(data, tweet_keys_wanted, user_keys_wanted)
+	
+	print 'Processed and saved', len(sim_tweets), "tweets"
+	json.dump(sim_tweets, open(outfile,'w'))
+	
