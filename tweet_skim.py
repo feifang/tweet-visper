@@ -4,11 +4,12 @@
 
 # Revision history: 
 # 2016/04/09 - implemented basic functionality including get_field() and get_field_with()
+# 2016/04/09 - added method for user fields
 
 import json
 import string
 
-data = '../data/Springbreak_All_0303_0405.json'
+data = '../data/Springbreak_0311All.json'
 
 def get_tweet_lang(tweet):
 	tweet_json = json.loads(tweet)
@@ -52,9 +53,24 @@ def get_field_with(data, key, withkey):
 						without_key += 1
 	print "Results:", len(result), "out of", len(result)+without_key, "tweets"
 	return result
+
+def get_user_field(data, key):
+	with open(data, 'r') as f:
+		result = []
+		without_key = 0
+		for line in f:
+			if check_valid(line):
+				user = json.loads(line)['user']
+				if user[key]:				
+					result.append(user[key])
+				else: 
+					without_key += 1
+	print "Results:", len(result), "out of", len(result)+without_key, "tweets"
+	return result
 		
 		
 if __name__ == '__main__':
+	'''
 	places = get_field(data, 'place')
 	count = 0
 	for place in places:
@@ -63,5 +79,5 @@ if __name__ == '__main__':
 		elif place['place_type'] == 'poi':
 			count += 1
 	print 'count:', count
-
+	'''
 	

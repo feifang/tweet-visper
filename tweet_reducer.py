@@ -1,5 +1,16 @@
+# coding=utf-8
+# Written by Karen Fang - karen.feifang@gmail.com
+# A tool for generating customized reduced tweets based on API returned ones.
+
+# Revision history: 
+# 2016/04/09 - implemented basic functionality including get_field() and get_field_with()
+
+
 import json
 import string
+from datetime import datetime
+from datetime import timedelta
+
 
 data = '../data/Springbreak_0311All.json'
 
@@ -48,6 +59,14 @@ def extract_tweet_entities(tweet):
 	}
 	return entities
 	
+def get_localtime(utc_time, offset):
+	clean_timestamp = datetime.strptime(utc_time, '%a %b %d %H:%M:%S +0000 %Y')
+	offset_hours = offset/3600   # offset: second -> hour
+	local_timestamp = clean_timestamp + timedelta(hours=offset_hours)
+	return local_timestamp.strftime('%Y-%m-%d %H:%M:%S')
+	
+	
+
 def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 	sim_tweets = []
 	sim_tweet = {}
@@ -63,12 +82,17 @@ def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 				if entity_wanted:
 					entities = extract_tweet_entities(tweet)
 					sim_tweet['entities'] = entities
+				# add local create time (if utc_offset is available)
+				offset = user['utc_offset']
+				if offset:
+					sim_tweet['local_ctime'] = get_localtime(tweet['created_at'], offset)
 			sim_tweets.append(sim_tweet)			
 	return sim_tweets
 			
 			
 			
 if __name__ == '__main__':
+	# define customized list of keys for the reduced tweets
 	tweet_keys_wanted = ['created_at', 'id', 'text', 'in_reply_to_status_id', 'in_reply_to_user_id', 'coordinates', 'retweet_count', 'favorite_count', 'retweeted', 'place']
 	user_keys_wanted = ['id']
 	sim_tweets = sim_tweet(data, tweet_keys_wanted, user_keys_wanted)[:5]
