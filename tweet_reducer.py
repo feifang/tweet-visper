@@ -94,6 +94,6 @@ def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 if __name__ == '__main__':
 	# define customized list of keys for the reduced tweets
 	tweet_keys_wanted = ['created_at', 'id', 'text', 'in_reply_to_status_id', 'in_reply_to_user_id', 'coordinates', 'retweet_count', 'favorite_count', 'retweeted', 'place']
-	user_keys_wanted = ['id']
+	user_keys_wanted = ['id', 'location', 'followers_count', 'friends_count', 'statuses_count', 'utc_offset', 'time_zone']
 	sim_tweets = sim_tweet(data, tweet_keys_wanted, user_keys_wanted)[:5]
 	print sim_tweets
