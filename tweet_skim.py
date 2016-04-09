@@ -8,7 +8,7 @@
 import json
 import string
 
-data = '../data/Springbreak_0311All.json'
+data = '../data/Springbreak_All_0303_0405.json'
 
 def get_tweet_lang(tweet):
 	tweet_json = json.loads(tweet)
@@ -58,9 +58,10 @@ if __name__ == '__main__':
 	places = get_field(data, 'place')
 	count = 0
 	for place in places:
-		if place['country_code'] != 'US':
-			print place['country_code'], place['place_type'], place['name'], place['full_name']
+		if place['country_code'] == 'US' and place['place_type']!= 'poi':
+			print place['country_code'], place['place_type'], place['name'], place['full_name'], place['attributes']
+		elif place['place_type'] == 'poi':
 			count += 1
 	print 'count:', count
-	
+
 	
