@@ -4,6 +4,7 @@
 
 # Revision history: 
 # 2016/04/09 - implemented basic functionality including get_field() and get_field_with()
+# 2016/04/10 - fixed some I/O bugs
 
 
 import json
@@ -11,7 +12,7 @@ import string
 from datetime import datetime
 from datetime import timedelta
 
-filename = 'Springbreak_All_0303_0405'
+filename = 'Springbreak_0311All'
 data = '../data/%s.json'%filename
 outfile = "../pro_data/%s_sim.json"%filename
 
@@ -70,12 +71,12 @@ def get_localtime(utc_time, offset):
 
 def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 	sim_tweets = []
-	sim_tweet = {}
-	sim_user = {}
 	with open(data, 'r') as f:
 		for line in f:
 			tweet = check_valid(line)
 			if tweet:
+				sim_tweet = {}
+				sim_user = {}
 				user = tweet['user']
 				for tweet_key in tweet_keys:
 					sim_tweet[tweet_key] = tweet[tweet_key]
@@ -89,8 +90,14 @@ def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 				offset = user['utc_offset']
 				if offset:
 					sim_tweet['local_ctime'] = get_localtime(tweet['created_at'], offset)
-			sim_tweets.append(sim_tweet)			
+				sim_tweets.append(sim_tweet)		
 	return sim_tweets
+
+def save_json_to_file(tweets, delimiter):
+	with open(outfile, 'w') as out_file:
+		for tweet in tweets:
+			out_file.write(json.dumps(tweet) + delimiter)
+		
 			
 			
 			
@@ -100,6 +107,8 @@ if __name__ == '__main__':
 	user_keys_wanted = ['id', 'location', 'followers_count', 'friends_count', 'statuses_count', 'utc_offset', 'time_zone']
 	sim_tweets = sim_tweet(data, tweet_keys_wanted, user_keys_wanted)
 	
+	
 	print 'Processed and saved', len(sim_tweets), "tweets"
-	json.dump(sim_tweets, open(outfile,'w'))
+	# write to file line by line
+	save_json_to_file(sim_tweets, '\n')
 	
