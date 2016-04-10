@@ -32,8 +32,10 @@ def check_valid(line):
 			return tweet;
 	# if not valid, then None will be returned
 
-		
-#def change_timezone(time, localtime):
+def save_json_to_file(tweets, delimiter):
+	with open(outfile, 'w') as out_file:
+		for tweet in tweets:
+			out_file.write(json.dumps(tweet) + delimiter)
 
 def extract_tweet_entities(tweet):
 	# extract the entities in text
@@ -95,12 +97,6 @@ def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 					sim_tweet['retweeted_status'] = tweet['retweeted_status']
 				sim_tweets.append(sim_tweet)		
 	return sim_tweets
-
-def save_json_to_file(tweets, delimiter):
-	with open(outfile, 'w') as out_file:
-		for tweet in tweets:
-			out_file.write(json.dumps(tweet) + delimiter)
-		
 			
 			
 			
