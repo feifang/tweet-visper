@@ -4,7 +4,7 @@
 
 # Revision history: 
 # 2016/04/09 - implemented basic functionality including get_field() and get_field_with()
-# 2016/04/10 - fixed some I/O bugs
+# 2016/04/10 - fixed some I/O bugs, added retweeted_status
 
 
 import json
@@ -90,6 +90,9 @@ def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 				offset = user['utc_offset']
 				if offset:
 					sim_tweet['local_ctime'] = get_localtime(tweet['created_at'], offset)
+				# add retweeted_status (if available)
+				if tweet.has_key('retweeted_status'):
+					sim_tweet['retweeted_status'] = tweet['retweeted_status']
 				sim_tweets.append(sim_tweet)		
 	return sim_tweets
 
