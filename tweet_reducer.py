@@ -13,8 +13,8 @@ from datetime import datetime
 from datetime import timedelta
 
 filename = 'Springbreak_All_0303_0405'
-data = '../data/%s.json'%filename
-outfile = "../pro_data/%s_sim.json"%filename
+data = '../data/Springbreak_All_0303_0405.json'
+outpath = '../pro_data/'
 
 def get_tweet_lang(tweet):
 	if tweet.has_key('lang'):
@@ -32,8 +32,8 @@ def check_valid(line):
 			return tweet;
 	# if not valid, then None will be returned
 
-def save_json_to_file(tweets, delimiter):
-	with open(outfile, 'w') as out_file:
+def save_json_to_file(tweets, delimiter, path, filename):
+	with open(path+filename, 'w') as out_file:
 		for tweet in tweets:
 			out_file.write(json.dumps(tweet) + delimiter)
 
@@ -42,7 +42,7 @@ def extract_tweet_entities(tweet):
 	# Todo: for mentioned user, get he's id too, so as to get further info.
 	screen_names = [ user_mention['screen_name']
 						for user_mention in tweet['entities']['user_mentions']]
-	hashtags = [ hashtag['text']
+	hashtags = [ hashtag['text'].lower()
 					for hashtag in tweet['entities']['hashtags']]
 	urls = [ url['expanded_url']
 				for url in tweet['entities']['urls']]
@@ -108,5 +108,5 @@ if __name__ == '__main__':
 	
 	print 'Processed and saved', len(sim_tweets), "tweets"
 	# write to file line by line
-	save_json_to_file(sim_tweets, '\n')
+	save_json_to_file(sim_tweets, '\n', outpath, filename+'_sim.json')
 	

@@ -12,8 +12,9 @@ import string
 from prettytable import PrettyTable
 from collections import Counter
 
+filename = 'Springbreak_All_0303_0405_sim'
 data = '../pro_data/Springbreak_All_0303_0405_sim.json'
-outfile = '../trends/%s'
+outpath = '../trends/'
 
 # for sorting a list of tuples
 def getKey(item):
@@ -32,7 +33,7 @@ def load_json_from_file(data):
 	return tweets
 
 def save_list_to_csv(data, fields, filename):    #fields - String
-	with open(outfile%filename,'w') as out:
+	with open(outpath+filename,'w') as out:
 		# use print instead of write to avoid UnicodeEncodeError
 		print(fields, file = out)
 		for row in data:
@@ -133,7 +134,7 @@ def get_trends(data, filename = None):
 		'tweets_stat': tweets_stat(tweets)
 	}
 	if filename:
-		with open(outfile% filename, 'w') as out:
+		with open(outpath+filename, 'w') as out:
 			out.write(json.dumps(trends, indent=4))
 		
 
