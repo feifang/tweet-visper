@@ -12,7 +12,7 @@ import string
 from datetime import datetime
 from datetime import timedelta
 
-filename = 'Springbreak_0311All'
+filename = 'Springbreak_All_0303_0405'
 data = '../data/%s.json'%filename
 outfile = "../pro_data/%s_sim.json"%filename
 
@@ -39,6 +39,7 @@ def save_json_to_file(tweets, delimiter):
 
 def extract_tweet_entities(tweet):
 	# extract the entities in text
+	# Todo: for mentioned user, get he's id too, so as to get further info.
 	screen_names = [ user_mention['screen_name']
 						for user_mention in tweet['entities']['user_mentions']]
 	hashtags = [ hashtag['text']
@@ -69,8 +70,6 @@ def get_localtime(utc_time, offset):
 	local_timestamp = clean_timestamp + timedelta(hours=offset_hours)
 	return local_timestamp.strftime('%Y-%m-%d %H:%M:%S')
 	
-	
-
 def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 	sim_tweets = []
 	with open(data, 'r') as f:
@@ -102,8 +101,8 @@ def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 			
 if __name__ == '__main__':
 	# define customized list of keys for the reduced tweets
-	tweet_keys_wanted = ['created_at', 'id', 'text', 'in_reply_to_status_id', 'in_reply_to_user_id', 'coordinates', 'retweet_count', 'favorite_count', 'retweeted', 'place']
-	user_keys_wanted = ['id', 'location', 'followers_count', 'friends_count', 'statuses_count', 'utc_offset', 'time_zone']
+	tweet_keys_wanted = ['created_at', 'id', 'text', 'in_reply_to_status_id', 'in_reply_to_user_id', 'coordinates', 'retweet_count', 'favorite_count', 'place']
+	user_keys_wanted = ['id', 'screen_name', 'location', 'followers_count', 'friends_count', 'statuses_count', 'utc_offset', 'time_zone']
 	sim_tweets = sim_tweet(data, tweet_keys_wanted, user_keys_wanted)
 	
 	

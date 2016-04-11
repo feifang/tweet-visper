@@ -4,7 +4,7 @@
 # Inspired by Mining the Social Web, Second Edition(Chinese Edition), Page 41
 
 # Revision history: 
-# 2016/04/10 - 
+# 2016/04/11 - get trends (including tweets and users number, top retweets and entities)
 
 from __future__ import print_function  
 import json
@@ -12,7 +12,7 @@ import string
 from prettytable import PrettyTable
 from collections import Counter
 
-data = '../pro_data/Springbreak_0311All_sim.json'
+data = '../pro_data/Springbreak_All_0303_0405_sim.json'
 outfile = '../trends/%s'
 
 # for sorting a list of tuples
@@ -47,6 +47,35 @@ def print_cmd_table(data, fields, max_width_col):   #fields - List
 	pt.max_width[max_width_col] = 50
 	pt.align = 'l'
 	print (pt)
+
+def tweets_stat(tweets):
+	with_media_count = 0
+	with_url_count = 0
+	with_mention_count = 0
+	retweet_count = 0
+	re_with_media_count = 0
+	re_with_url_count = 0
+	re_with_mention_count = 0
+	ori_with_media_count = 0
+	ori_with_url_count = 0
+	ori_with_mention_count = 0
+	tweet_count = len(tweets)
+	for tweet in tweets:
+		entities = tweet['entities']
+		if entities['media'] != [] : with_media_count += 1
+		if entities['screen_names'] != [] : with_mention_count += 1
+		if entities['urls'] != [] : with_url_count +=1
+		if tweet.has_key('retweeted_status'): 
+			retweet_count += 1
+			if entities['media'] != [] : re_with_media_count += 1
+			if entities['screen_names'] != [] : re_with_mention_count += 1
+			if entities['urls'] != [] : re_with_url_count +=1
+		else:
+			if entities['media'] != [] : ori_with_media_count += 1
+			if entities['screen_names'] != [] : ori_with_mention_count += 1
+			if entities['urls'] != [] : ori_with_url_count +=1
+	return {'total': {'type':'tweet', 'count': tweet_count, 'has_media': with_media_count, 'has_link': with_url_count, 'has_mention': with_mention_count}, 'original': {'type':'original', 'count':tweet_count - retweet_count,  'has_media': ori_with_media_count, 'has_link': ori_with_url_count, 'has_mention': ori_with_mention_count}, 'retweet': {'type':'retweet', 'count': retweet_count, 'has_media': re_with_media_count, 'has_link': re_with_url_count, 'has_mention': re_with_mention_count}}
+		
 
 
 def get_top_retweets(tweets, save_to_csv = True):
@@ -97,14 +126,11 @@ def get_top_entities(tweets, save_to_csv = True, print_to_cmd = True):
 
 def get_trends(data, filename = None):
 	tweets = load_json_from_file(data)
-	tweets_count = len(tweets)
-	users_count = count_unique_users(tweets)
-	top_retweets = get_top_retweets(tweets)[:50]
 	trends = {
-		'tweets_count': tweets_count,
-		'users_count': users_count,
-		'top_retweets': top_retweets,
-		'top_entities': get_top_entities(tweets)
+		'users_count': count_unique_users(tweets), 
+		'top_retweets': get_top_retweets(tweets),
+		'top_entities': get_top_entities(tweets),
+		'tweets_stat': tweets_stat(tweets)
 	}
 	if filename:
 		with open(outfile% filename, 'w') as out:
@@ -113,6 +139,8 @@ def get_trends(data, filename = None):
 
 if __name__ == '__main__':
 	get_trends(data, "trends.json")
+	
+	
 	
 	
 	
