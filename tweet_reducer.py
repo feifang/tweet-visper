@@ -12,7 +12,7 @@ import string
 from datetime import datetime
 from datetime import timedelta
 
-filename = 'Springbreak_0311All_0303_0405'
+filename = 'Springbreak_All_0303_0405'
 data = '../data/Springbreak_All_0303_0405.json'
 outpath = '../pro_data/'
 
