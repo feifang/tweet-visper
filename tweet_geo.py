@@ -3,7 +3,7 @@
 # A tool for generating full geo information of both tweets and users
 
 # Revision history: 
-# 2016/04/12 - 
+# 2016/04/12 - add geo info of tweets and users to dataset
 
 import json
 import string
@@ -16,6 +16,7 @@ filename = 'Springbreak_0311All_sim_nlp'
 data = '../pro_data/Springbreak_0311All_sim_nlp.json'
 outpath = '../pro_data/'
 
+
 def get_geo_from_place(place):
 	geo = {
 		'name': place['name'],
@@ -23,7 +24,6 @@ def get_geo_from_place(place):
 		'country': place['country'],
 		'country_code': place['country_code']
 	}
-	print place['place_type']
 	# get state name for places in US 
 	if place['country_code'] == 'US':
 		if place['place_type'] == 'city':
@@ -34,25 +34,41 @@ def get_geo_from_place(place):
 			geo['state_code'] = us.states.lookup(geo['state']).abbr
 		# geocode, place name should be long enough (>14) to be significant
 		elif place['place_type'] == 'poi' and len(place['full_name']) > 14:  
-			print place['full_name']
 			try: 
 				g = Geocoder.geocode(place['full_name'])
 				if g.country == 'United States':
 					geo['state'] = g.state
 					geo['state_code'] = g.state__short_name
-					print geo
 			except Exception, error:
 				print "Not Found:",error
 				pass
 	return geo
-	
 
+def get_geo_from_location(location):
+	try:
+		g = Geocoder.geocode(location)
+		geo = {
+			'location': location,
+			'full_location': g.formatted_address,
+			'country': g.country
+		}
+		if g.country == 'United States':
+			geo['state'] = g.state
+			geo['state_code'] = g.state__short_name
+		print geo
+		return geo
+	except Exception, error:
+		print "Not Found:",error
+		pass
+	
 # standalone function: input a tweet(JSON) and output a tweet(JSON) with nlp data 
 def add_geo_data(tweet):
 	# copy tweet data
 	geo_tweet = tweet
 	if geo_tweet['place']:
 		geo_tweet['tweet_geo'] = get_geo_from_place(geo_tweet['place'])
+	if geo_tweet['user']['location'] and len(geo_tweet['user']['location']) > 5:
+		geo_tweet['user_geo'] = get_geo_from_location(geo_tweet['user']['location'])
 	return geo_tweet
 	
 # process tweets in batch 
