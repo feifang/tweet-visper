@@ -5,11 +5,13 @@
 # Revision history: 
 # 2016/04/09 - implemented basic functionality including get_field() and get_field_with()
 # 2016/04/09 - added method for user fields
+# 2016/04/12 - added method for entities fields
+
 
 import json
 import string
 
-data = '../data/Springbreak_0311All.json'
+data = '../pro_data/Springbreak_0311All_sim_nlp.json'
 
 def get_tweet_lang(tweet):
 	tweet_json = json.loads(tweet)
@@ -67,9 +69,26 @@ def get_user_field(data, key):
 					without_key += 1
 	print "Results:", len(result), "out of", len(result)+without_key, "tweets"
 	return result
+	
+def get_entities_field(data, key):
+	with open(data, 'r') as f:
+		result = []
+		without_key = 0
+		for line in f:
+			#if check_valid(line):
+			if True:    # for sim_tweets/ nlp_tweets (no 'lang' field)
+				entities = json.loads(line)['entities']
+				if entities[key]:				
+					result.append(entities[key])
+				else: 
+					without_key += 1
+	print "Results:", len(result), "out of", len(result)+without_key, "tweets"
+	return result
 		
 		
 if __name__ == '__main__':
+	print get_entities_field(data, 'pos')[:10]
+	
 	'''
 	places = get_field(data, 'place')
 	count = 0

@@ -4,9 +4,13 @@
 
 # Revision history: 
 # 2016/04/11 - tokenization, extract some Emoji and save as entities
+# 2016/04/12 - added more Emoji and sentiment functionality
 
 import json
 import string
+import re
+from pattern.en import tag
+from pattern.en import sentiment
 from twokenize import normalizeTextForTagger, tokenizeRawTweetText
 from tweet_reducer import save_json_to_file
 from tweet_trending import load_json_from_file
@@ -58,7 +62,22 @@ def sep_emoji(str, sep):
 def tokenize(text):
 	return tokenizeRawTweetText(text)
 
+# In nlp process, we only care about terms, rather than sentences, so sentences may not be readable
 def normalize(text):
+	# for easier comparison 
+	text = text.lower()
+	# replace common abbreviation or unreadable characters 
+	text = text.replace("&gt;", ">")
+	text = text.replace("&amp;", "&")
+	text = text.replace("w/", "with")
+	text = text.replace('\u2019', "'")
+	text = text.replace('\u2026', "...")
+	# remove urls
+	text = re.sub(r'http\S+', '', text)    #replace URL links with the term 'URL'
+	# remove keyword 'springbreak'
+	text = text.replace('springbreak', '')
+	text = text.replace('spring', '')
+	text = text.replace('break', '')
 	return normalizeTextForTagger(text)
 	
 # standalone function
@@ -73,15 +92,37 @@ def extract_emoji(text, Emoji_list):
 			print "Extracted", emoji
 	print "After:", text
 	return text, emojis
+
+def tag_pos(text, pos_wanted):
+	t = tag(text)
+	pos_list = {}
+	for p in pos_wanted:
+		pos_list[p] = [word for word, pos in t if pos == p]
+	return pos_list
+	
+# input : a string
+# output: a dict
+def sentiment_pattern(text):
+	test_result = sentiment(text)
+	# (polarity, subjectivity)-tuple, e.g.(0.4083333333333334, 0.4666666666666666)
+	return {'polarity': test_result[0], 'subjectivity': test_result[1]}
 	
 # standalone function: input a tweet(JSON) and output a tweet(JSON) with nlp data 
 def add_nlp_data(tweet):
 	# copy tweet data
 	nlp_tweet = tweet
-	text = nlp_tweet['text']
-	# update text and entities after extracting emoji
+	# we focus on the tweet itself now, so remove the retweeted status
+	nlp_tweet.pop("retweeted_status", None)
+	
+	# STEP 1: update text and entities after extracting emoji
+	text = normalize(nlp_tweet['text'])
 	nlp_tweet['text'], nlp_tweet['entities']['emoji'] = extract_emoji(text, Emoji_list)
 	nlp_tweet['tokens'] = tokenize(nlp_tweet['text'])
+	# STEP 2: tag part_of_speech and save useful ones, use text from STEP 1
+	pos_wanted = ['JJ', 'RB', 'VB', 'VBD', 'VBG', 'VBN']    # adjective, adverb, verb(take, took, taking, taken)
+	nlp_tweet['pos'] = tag_pos(nlp_tweet['text'], pos_wanted)
+	# STEP 3: add sentiment score 
+	nlp_tweet['sentiment'] = sentiment_pattern(nlp_tweet['text'])
 	return nlp_tweet
 
 # process tweets in batch 
@@ -99,10 +140,3 @@ def get_nlp_tweet(data):
 	
 if __name__ == '__main__':
 	get_nlp_tweet(data)
-
-'''
-	e = sep_emoji(people_single,1)
-	for x in e:
-		print x
-
-'''	

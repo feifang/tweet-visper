@@ -12,7 +12,7 @@ import string
 from datetime import datetime
 from datetime import timedelta
 
-filename = 'Springbreak_All_0303_0405'
+filename = 'Springbreak_0311All_0303_0405'
 data = '../data/Springbreak_All_0303_0405.json'
 outpath = '../pro_data/'
 
@@ -101,7 +101,7 @@ def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 			
 if __name__ == '__main__':
 	# define customized list of keys for the reduced tweets
-	tweet_keys_wanted = ['created_at', 'id', 'text', 'in_reply_to_status_id', 'in_reply_to_user_id', 'coordinates', 'retweet_count', 'favorite_count', 'place']
+	tweet_keys_wanted = ['created_at', 'id', 'lang', 'text', 'in_reply_to_status_id', 'in_reply_to_user_id', 'coordinates', 'retweet_count', 'favorite_count', 'place']
 	user_keys_wanted = ['id', 'screen_name', 'location', 'followers_count', 'friends_count', 'statuses_count', 'utc_offset', 'time_zone']
 	sim_tweets = sim_tweet(data, tweet_keys_wanted, user_keys_wanted)
 	
