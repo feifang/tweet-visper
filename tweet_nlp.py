@@ -15,8 +15,8 @@ from twokenize import normalizeTextForTagger, tokenizeRawTweetText
 from tweet_reducer import save_json_to_file
 from tweet_trending import load_json_from_file
 
-filename = 'Springbreak_0311All_sim'
-data = '../pro_data/Springbreak_0311All_sim.json'
+filename = 'Springbreak_All_0303_0405_sim'
+data = '../pro_data/Springbreak_All_0303_0405_sim.json'
 outpath = '../pro_data/'
 
 # Todo: add all other emoji to the list
