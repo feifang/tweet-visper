@@ -1,4 +1,5 @@
-# coding=utf-8
+#!/usr/bin/env python
+
 # Written by Karen Fang - karen.feifang@gmail.com
 # A tool for discovering trends in tweets 
 # Inspired by Mining the Social Web, Second Edition(Chinese Edition), Page 41

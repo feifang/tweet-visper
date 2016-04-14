@@ -1,4 +1,5 @@
-# coding=utf-8
+#!/usr/bin/env python
+
 # Written by Karen Fang - karen.feifang@gmail.com
 # A tool for generating full geo information of both tweets and users
 
