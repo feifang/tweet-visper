@@ -51,32 +51,43 @@ def print_cmd_table(data, fields, max_width_col):   #fields - List
 	print (pt)
 
 def tweets_stat(tweets):
-	with_media_count = 0
-	with_url_count = 0
-	with_mention_count = 0
 	retweet_count = 0
 	re_with_media_count = 0
 	re_with_url_count = 0
 	re_with_mention_count = 0
+	re_with_hashtag_count = 0
 	ori_with_media_count = 0
 	ori_with_url_count = 0
 	ori_with_mention_count = 0
+	ori_with_hashtag_count = 0
 	tweet_count = len(tweets)
 	for tweet in tweets:
 		entities = tweet['entities']
-		if entities['media'] != [] : with_media_count += 1
-		if entities['screen_names'] != [] : with_mention_count += 1
-		if entities['urls'] != [] : with_url_count +=1
 		if tweet.has_key('retweeted_status'): 
 			retweet_count += 1
 			if entities['media'] != [] : re_with_media_count += 1
 			if entities['screen_names'] != [] : re_with_mention_count += 1
 			if entities['urls'] != [] : re_with_url_count +=1
+			if entities['hashtags'] != []: re_with_hashtag_count += 1
 		else:
 			if entities['media'] != [] : ori_with_media_count += 1
 			if entities['screen_names'] != [] : ori_with_mention_count += 1
 			if entities['urls'] != [] : ori_with_url_count +=1
-	return {'total': {'type':'tweet', 'count': tweet_count, 'has_media': with_media_count, 'has_link': with_url_count, 'has_mention': with_mention_count}, 'original': {'type':'original', 'count':tweet_count - retweet_count,  'has_media': ori_with_media_count, 'has_link': ori_with_url_count, 'has_mention': ori_with_mention_count}, 'retweet': {'type':'retweet', 'count': retweet_count, 'has_media': re_with_media_count, 'has_link': re_with_url_count, 'has_mention': re_with_mention_count}}
+			if entities['hashtags'] != []: ori_with_hashtag_count += 1
+	ori_count = tweet_count - retweet_count
+	per_ori = {
+		'has_media': round(ori_with_media_count/(ori_count*1.0), 2),
+		'has_url': round(ori_with_url_count/(ori_count*1.0), 2),
+		'has_mention': round(ori_with_mention_count/(ori_count*1.0), 2),
+		'has_hashtag': round(ori_with_hashtag_count/(ori_count*1.0), 2)
+	}
+	per_re = {
+		'has_media': round(re_with_media_count/(retweet_count*1.0), 2),
+		'has_url': round(re_with_url_count/(retweet_count*1.0), 2),
+		'has_mention': round(re_with_mention_count/(retweet_count*1.0), 2),
+		'has_hashtag': round(re_with_hashtag_count/(retweet_count*1.0), 2)
+	}
+	return {'per_ori':per_ori, 'per_re':per_re, 'total': {'type':'tweet', 'count': tweet_count, 'has_media': re_with_media_count+ori_with_media_count, 'has_link': re_with_url_count+ori_with_url_count, 'has_mention': re_with_mention_count+ori_with_mention_count, 'has_hashtag': re_with_hashtag_count+ori_with_hashtag_count }, 'original': {'type':'original', 'count':ori_count,  'has_media': ori_with_media_count, 'has_link': ori_with_url_count, 'has_mention': ori_with_mention_count, 'has_hashtag': ori_with_hashtag_count }, 'retweet': {'type':'retweet', 'count': retweet_count, 'has_media': re_with_media_count, 'has_link': re_with_url_count, 'has_mention': re_with_mention_count, 'has_hashtag': re_with_hashtag_count}}
 		
 
 

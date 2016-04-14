@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # Written by Karen Fang - karen.feifang@gmail.com
 # A tool for generating full geo information of both tweets and users
@@ -14,7 +15,7 @@ from tweet_reducer import save_json_to_file
 from tweet_trending import load_json_from_file
 
 filename = 'Springbreak_All_0303_0405_sim_nlp'
-data = '../pro_data/Springbreak_All_0303_0405_sim_nlp.json'
+data = '../pro_data/Springbreak_All_0303_0405_sim_nlp_geo.json'
 outpath = '../pro_data/'
 
 
@@ -75,6 +76,9 @@ def get_geo_from_location(location):
 	
 # standalone function: input a tweet(JSON) and output a tweet(JSON) with nlp data 
 def add_geo_data(tweet, user_geo_wanted = False):
+	# pass if it's been geocoded
+	if tweet['tweet_geo']:
+		return tweet
 	# copy tweet data
 	geo_tweet = tweet
 	if geo_tweet['place']:
@@ -87,9 +91,15 @@ def add_geo_data(tweet, user_geo_wanted = False):
 	
 # process tweets in batch 
 def geo_tweet(tweets):
+	geo_tweets = []
+	i = 0
 	for tweet in tweets:
-		count = add_geo_data(tweet)
-	return tweets
+		if tweet['place']:
+			x = add_geo_data(tweet)
+			geo_tweets.insert(0,x)
+			i += 1
+			print "Processd and saved", i, "tweets with geolocation."
+	return geo_tweets
 
 # process tweets from file to file
 def get_geo_tweet(data):
