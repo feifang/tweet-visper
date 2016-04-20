@@ -17,6 +17,8 @@ filename = 'Springbreak_All_0303_0405'
 data = '../data/Springbreak_All_0303_0405.json'
 outpath = '../pro_data/'
 
+geo_data = '../pro_data/Springbreak_All_0303_0405_sim_nlp_geo.json'
+
 def get_tweet_lang(tweet):
 	if tweet.has_key('lang'):
 		return tweet['lang']
@@ -98,9 +100,27 @@ def sim_tweet(data, tweet_keys, user_keys, entity_wanted = True):
 				sim_tweets.append(sim_tweet)		
 	return sim_tweets
 			
+# get simplified geo data for vis from sim_nlp_geo.json data (quick version)
+def sim_geo(geo_data):
+	sim_geo = []
+	with open(geo_data, 'r') as f:
+		for line in f:
+			tweet = check_valid(line)
+			if tweet:
+				geo = tweet['tweet_geo']
+				if geo['country_code']!='US':
+					sim = {
+						'country': geo['country'],
+						'name': geo['name'],
+						'sent': tweet['sentiment']['polarity']
+					}
+					sim_geo.append(sim)
+		print len(sim_geo)
+		return sim_geo
 			
 			
 if __name__ == '__main__':
+	'''
 	# define customized list of keys for the reduced tweets
 	tweet_keys_wanted = ['created_at', 'id', 'lang', 'text', 'in_reply_to_status_id', 'in_reply_to_user_id', 'coordinates', 'retweet_count', 'favorite_count', 'place']
 	user_keys_wanted = ['id', 'screen_name', 'location', 'followers_count', 'friends_count', 'statuses_count', 'utc_offset', 'time_zone']
@@ -110,4 +130,8 @@ if __name__ == '__main__':
 	print 'Processed and saved', len(sim_tweets), "tweets"
 	# write to file line by line
 	save_json_to_file(sim_tweets, '\n', outpath, filename+'_sim.json')
+	'''
+	
+	s = sim_geo(geo_data)
+	save_json_to_file(s, ',', outpath, filename+'_simgeo_others.json')
 	
