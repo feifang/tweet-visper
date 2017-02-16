@@ -1,7 +1,7 @@
 # To run this code, first edit config.py with your configuration, then:
 #
 # mkdir data
-# python twitter_stream_download.py -q Trump -d data
+# python twitter_stream_download_keyword.py -q springbreak -d data
 # 
 # It will produce the list of tweets for the query "apple" 
 # in the file data/stream_apple.json
@@ -117,9 +117,11 @@ if __name__ == '__main__':
 	# Bounding boxes for geolocations
 	# Online-Tool to create boxes (c+p as raw CSV): http://boundingbox.klokantech.com/
     GEOBOX_HONGKONG = [113.835078,22.1533884,114.4069573,22.561968]
-    twitter_stream = Stream(auth, MyListener(args.data_dir, args.query))
+    #twitter_stream = Stream(auth, MyListener(args.data_dir, args.query))
+    twitter_stream = Stream(auth, MyListener("data", "springbreak"))
     #twitter_stream.filter(locations = GEOBOX_HONGKONG, async = True)
     
     # filter by keyword
     
-    twitter_stream.filter(track=[args.query], async = True)
+    #twitter_stream.filter(track=[args.query], async = True)
+    twitter_stream.filter(track=["springbreak"], async = True)
